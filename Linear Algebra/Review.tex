@@ -1,0 +1,203 @@
+
+\documentclass[11pt]{amsart}
+
+\usepackage{geometry}
+\geometry{letterpaper}
+\usepackage[parfill]{parskip}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\DeclareMathOperator{\Span}{span}
+\newcommand{\reals}{\mathbb{R}}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+
+\title{Linear Algebra Review}
+\author{Phil Mayer}
+
+\begin{document}
+\maketitle
+
+\section{Vectors, Matrices, and Linear Systems}
+\subsection{Vectors in Euclidean Space}
+
+\begin{itemize}
+
+	\item{
+		\textbf{Euclidean n-space}, denoted $\reals^n$, consists of all ordered $n$-tuples of real numbers. Each $n$-tuple $x$ can be
+		regarded as a point $(x_1, x_2, \dots, x_n)$ and represented graphically as a dot, or regarded as a vector. In vector form, $x$ would be
+		written as $\vec{x} = [ x_1, x_2, \dots, x_n]$, illustrated by an arrow. The $n$-tuple $\vec{0} = [0, 0, \dots, 0]$ is called the  
+		\textbf{zero vector}.
+	}
+	\item{
+		Vectors $\vec{v}$ and $\vec{w}$ in $\reals^n$ can be added and subtracted. They can also be multiplied by scalars 
+		$r \in \reals$. The addition or scalar multiplication is performed on the components of the vectors.
+	}
+	\item{
+		We say that two vectors are \textbf{parallel} if one vector is a scalar multiple of another.
+	}
+	\item{
+		A \textbf{linear combination} of vectors $\vec{v}_1, \vec{v}_2, \dots, \vec{v}_n$ is a vector of the form 
+		$r_1 \vec{v}_1, r_2 \vec{v}_2, \dots, r_n \vec{v}_n$ for $r_i \in \reals$.  The set of all linear combinations of the vectors 
+		$\vec{v}_1, \vec{v}_2, \dots, \vec{v}_n$ is denoted $\Span(\vec{v}_1, \vec{v}_2, \dots, \vec{v}_n)$.
+	}
+	\item{
+		Every vector in $\reals^n$ can be expressed uniquely as a linear combination of the \textbf{standard basis vectors} 
+		$\vec{e}_1, \vec{e}_2, \dots, \vec{e}_n$ where $\vec{e}_i$ has 1 as its $i^{\text{th}}$ component and zeros for all other components.
+	}
+\end{itemize}
+
+\subsection{The Norm and the Dot Product}
+
+\begin{itemize}
+
+	\item{
+		Let $\vec{v} = [ v_1, v_2, \dots, v_n]$ be a vector in $\reals^n$. The \textbf{norm} or \textbf{magnitude} of $\vec{v}$ is denoted
+		$\| \vec{v} \| = \sqrt{v_1^2 + v_2^2 + \dots + v_n^2}$.
+	}
+	\item{
+		Some properties of the norm are:
+		\begin{enumerate}
+		
+			\item{
+				$\| \vec{v} \| \geq 0$ and $\| \vec{v} \| = 0$ if and only if $\vec{v} = \vec{0}$.
+			}
+			\item{
+				$\| r \vec{v} \| = | r | \| \vec{v} \|$.
+			}
+			\item{
+				$ \| \vec{v} + \vec{w} \| \leq \| \vec{v} \| + \| \vec{w} \|$.
+			}
+		\end{enumerate}
+	}
+	\item{
+		A vector in $\reals^n$ is a \textbf{unit vector} if and only if it has magnitude 1. In order to make a vector 
+		$\vec{v} = [ v_1, v_2, \dots, v_n]$ a unit vector, divide it by its magnitude:
+		\[ 
+			\vec{u} = \frac{\vec{v}}{\| \vec{v} \|} = \frac{[ v_1, v_2, \dots, v_n]}{\sqrt{v_1^2 + v_2^2 + \dots + v_n^2}}
+		\]
+	}
+	\item{
+		The \textbf{dot product} of two vectors is equal to the product of their magnitudes with the cosine and the angle between them.
+		For two vectors $\vec{v}, \vec{w} \in \reals^n$ given by $\vec{v} = [ v_1, v_2, \dots, v_n]$ and $\vec{w} = [ w_1, w_2, \dots, w_n]$, we
+		define:
+		\[
+			\vec{v} \cdot \vec{w} = v_1 w_1 + v_2 w_2 + \dots + v_n w_n = \| \vec{v} \| \| \vec{w} \| \cos(\theta)
+		\]
+	}
+	\item{
+		We can find the angle between two vectors using this definition:
+		\[
+			\theta = \cos^{-1} \bigg(\frac{\vec{v} \cdot \vec{w}}{\| \vec{v} \| \| \vec{w} \|} \bigg)
+			= \cos^{-1} \bigg(\frac{v_1 w_1 + v_2 w_2 + \dots + v_n w_n}{\| \vec{v} \| \| \vec{w} \|} \bigg)
+		\]
+	}
+	\item{
+		Two vectors $\vec{v}, \vec{w} \in \reals^n$ are \textbf{orthogonal} or \textbf{perpendicular} if and only if $\vec{v} \cdot \vec{w} = 0$.
+	}
+\end{itemize}
+
+\subsection{Matrices and Their Algebra}
+
+\begin{itemize}
+
+	\item{
+		An $m \times n$ \textbf{matrix} is an ordered rectangular array of numbers containing $m$ rows and $n$ columns. We say that an
+		$m \times 1$ matrix is a \textbf{column vector} with $m$ components, and a $1 \times n$ matrix is a \textbf{row vector} with $n$
+		components.
+	}
+	\item{
+		The product $A\vec{b}$ of an $m \times n$ matrix $A$ and a column vector $\vec{b}$ with $n$ rows is a column vector. This column
+		vector is equal to a linear combination of the column vectors of $A$ where the scalar coefficient of the $j^\text{th}$ column vector
+		of $A$ is $b_j$.
+	}
+	\item{
+		The product $AB$ of an $m \times n$ matrix $A$ and an $n \times s$ matrix $B$ is the $m \times s$ matrix $C$ whose $j^\text{th}$
+		column is A times the $j^\text{th}$ column of $B$. The entry $c_{ij}$ is the dot product of the $i^\text{th}$ row vector of $A$ and the
+		$j^\text{th}$ column vector of $B$. In general, $AB \neq BA$.
+	}
+	\item{
+		If $A = [a_{ij}]$ and $B = [b_{ij}]$ are matrices of the same size, then $A + B$ is the matrix of that size with entry $a_{ij} + b_{ij}$ in the
+		$i^\text{th}$ row and $j^\text{th}$ column.
+	}
+	\item{
+		For any matrix $A$ and scalar $r$, the matrix $rA$ is found by multiplying each entry in $A$ by $r$.
+	}
+	\item{
+		The \textbf{transpose} of an $m \times n$ matrix $A$ is the $m \times n$ matrix $A^T$, which has its $k^\text{th}$ row vector as the
+		$k^\text{th}$ column vector of $A$.
+	}
+	
+\end{itemize}
+
+\subsection{Solving Systems of Linear Equations}
+
+\begin{itemize}
+
+	\item{
+		A linear system has an associated \textbf{augmented matrix}, having the coefficient matrix of the system on the left of the partition and
+		the column vector of constants on the right of the partition.
+	}
+	\item{
+		The elementary row operations on a matrix are as follows:
+		\begin{enumerate}
+			\item{Interchanging two rows.}
+			\item{Multiplication of a row by a nonzero scalar.}
+			\item{Addition of a multiple of a row to a different row.}
+		\end{enumerate}
+	}
+	\item{
+		Matrices $A$ and $B$ are \textbf{row equivalent} if and only if $A$ can be transformed into $B$ by a sequence of elementary row
+		operations. We denote this $A \sim B$.
+	}
+	\item{
+		If $A\vec{x} = \vec{b}$ and $H\vec{x} = \vec{c}$ are systems such that the augmented matrices $[\, A \, | \, \vec{b} \, ]$ and 
+		$[ \, H  \, | \, \vec{c} \, ]$ are row equivalent, then the systems $A\vec{x} = \vec{b}$ and $H\vec{x} = \vec{c}$ have the same solution
+		set.
+	}
+	\item{
+		A matrix is in \textbf{row-echelon form} if:
+		\begin{enumerate}
+		
+			\item{All rows containing only zeros are grouped together at the bottom of the matrix.}
+			\item{The first nonzero element (called a \textbf{pivot}) in any row appears in a column to the right of the first nonzero element
+			in any preceding row.}
+		\end{enumerate}
+	}
+	\item{
+		A matrix is in \textbf{reduced row-echelon form} if it is in row-echelon form and each pivot is 1 and the only nonzero element in its
+		column. Every matrix is row-equivalent to a unique matrix in reduced row-echelon form.
+	}
+	\item{
+		We can solve linear systems by augmenting a system's matrix with the \textbf{identity matrix} and reducing. If the matrix can be
+		put into reduced echelon form, the solutions are on the augmented portion. This technique is called the \textbf{Gauss-Jordan} method.
+	}
+	\item{
+		A linear system $A\vec{x} = \vec{b}$ has no solutions if and only if after reducing the matrix $[\, A \, | \, \vec{b} \, ]$ so that $A$ is in
+		row-echelon form, there exists a row with only zero entries to the left of the partition but with a nonzero entry to the right of the
+		partition. We call this type of system \textbf{inconsistent}.
+	}
+	\item{
+		Let $A$ be an $m \times n$ matrix. The linear system $A\vec{x} = \vec{b}$ is \textbf{consistent} if and only if the vector 
+		$\vec{b} \in \reals^n$ is in the span of the column vectors of $A$.
+	}
+	\item{
+		The following theorem describes consistent systems. Let $A\vec{x} = \vec{b}$ be consistent and suppose 
+		$[\, A \, | \, \vec{b} \, ] \sim [\, H \, | \, \vec{c} \, ]$. Then:
+		\begin{theorem}
+			If every column of $H$ contains a pivot, then the system has a unique solution. If some column of $H$ has no pivot, then the 
+			system has infinitely many solutions, with as many free variables as there are pivot-free columns in $H$.
+		\end{theorem}
+	}
+	\item{
+		An \textbf{elementary matrix} $E$ is obtained by applying a single elementary row operation to an identity matrix $I$. Multiplication of
+		a matrix $A$ by $E$ on the left performs the same elementary row operation on $A$.
+	}
+\end{itemize}
+
+
+\end{document}  

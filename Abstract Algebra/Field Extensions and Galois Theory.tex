@@ -1,0 +1,467 @@
+
+\documentclass[11pt]{amsart}
+
+\usepackage{geometry}
+\geometry{letterpaper}
+\usepackage[parfill]{parskip}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+% theorems, definitions, proofs, etc.
+\newtheorem{theorem}{Theorem}[section]
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{corollary}[theorem]{Corollary}
+
+% number systems
+\newcommand{\complexNumbers}{\mathbb{C}}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\rationals}{\mathbb{Q}}
+\newcommand{\integers}{\mathbb{Z}}
+\newcommand{\naturals}{\mathbb{N}}
+\newcommand{\primes}{\mathbb{P}}
+\newcommand{\qd}{\mathbb{Q}\sqrt{d}}
+\newcommand{\zd}{\mathbb{Z}\sqrt{d}} % algebraic integers
+\newcommand{\zi}{\mathbb{Z}[i]} % gaussian integers
+
+% linear algebra
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\nullity}{nullity}
+\DeclareMathOperator{\irr}{irr}
+
+% specific character styling
+\let\oldemptyset\emptyset
+\let\emptyset\varnothing
+
+% ring commands
+\newcommand{\ring}{(R, +, \, \cdot)}
+\newcommand{\ringSecondOp}{(R, \, \cdot)}
+
+% sequences
+\newcommand{\seq}{\{ x_n \}}
+
+
+\title{Topics in Algebra: Field Extensions and Galois Theory}
+\author{Phil Mayer}
+
+\begin{document}
+\maketitle
+
+\section{Extension Fields}
+Consider the polynomial $f(x) = x^2 - 2 \in \rationals[x]$. Based on our discussion of unique factorization, we know that $x^2 - 2$ is irreducible
+over $\rationals[x]$, but suppose we extend our field of possible coefficients to $\rationals(\sqrt{2}) = \{ a + b\sqrt{2} \mid a, b \in \rationals \}$. We
+can then factor $f(x)$ into a product of linear terms in $\rationals(\sqrt{2})$: $f(x) = (x - \sqrt{2})(x + \sqrt{2})$. Some preliminaries for the theory
+of field extensions are as follows.
+
+\begin{definition}
+	$E$ is an \textbf{extension field} of a field $F$ if and only if $F \leq E$ ($F$ is a subfield of $E$). Furthermore, $E$ is a \textbf{simple
+	extension} of $F$ if and only if $E = F(\alpha)$ for some $\alpha$.
+\end{definition}
+Some common examples of extension fields include $\zd$ and $\complexNumbers = \reals(i)$. While some extension fields may initially appear
+to not be simple, as multiple extensions like $\rationals(\sqrt{2}, \sqrt{3})$, they may actually end up being simple. For example,
+$\rationals(\sqrt{2}, \sqrt{3}) = \rationals(\sqrt{2} + \sqrt{3})$.
+\begin{definition}
+	Let $\alpha \in E$, where $E$ is an extension field of $F$. We say that $\alpha$ is \textbf{algebraic} over $F$ if and only if $\alpha$ is a root
+	of some function $f(x) \in F[x]$. Otherwise, $\alpha$ is said to be \textbf{transcendental} over $F$. Therefore, $\alpha$ is transcendental
+	over $F$ if and only if $\alpha$ is not algebraic over $F$.
+\end{definition}
+For example, $\pi$ and $e$ are transcendental over $\rationals$, yet algebraic over $\reals$ since the functions $f(x) = x - \pi$ and $g(x) = x - e$
+are in $\reals[x]$. Yet not all real numbers are transcendental over $\rationals$, for example. If we consider $\alpha = \sqrt{5}$, we see that
+$\alpha$ is a root of the function $x^2 - 5 \in \rationals[x]$. As another example, if $\alpha = \sqrt{2} + \sqrt{3}$, then:
+\begin{align*}
+	\alpha - \sqrt{2} = \sqrt{3} \implies 0&= \alpha^2 - 2\sqrt{2}\alpha - 1 \notin \rationals[x] \\
+	\text{But } 0 &= \alpha^4 - 10\alpha^2 + 1 \in \rationals[x]
+\end{align*}
+So $\alpha$ can be a root of a polynomial of degree 4 at the lowest over $\rationals[x]$.
+
+Now again consider $\rationals(\sqrt{5})$. Notice that $\forall r \in \rationals(\sqrt{5})$, $r = a + b\alpha = a + b\sqrt{5}$. Similarly, for all elements
+$r$ in the field $\rationals(\sqrt{2} + \sqrt{3})$, would end up looking like $r = a + b\alpha + c\alpha^2 + d\alpha^3$ for 
+$\alpha = \sqrt{2} + \sqrt{3}$. As we can see, the elements of our field start looking like vectors, written as linear combinations of basis vectors!
+For example, recall that in $\rationals(\sqrt{2} + \sqrt{3})$, $\alpha^4 = 10\alpha^2 - 1$. So $\alpha^4$ can be thought of as a linear combination
+of basis elements $\{ 1, \alpha, \alpha^2, \alpha^3 \}$. Let's begin formalizing some of these ideas.
+\begin{theorem}
+	Suppose $\alpha$ is algebraic over $F$. Let $p(x)$ be the monic polynomial of smallest degree of which $\alpha$ is a root. Then $p(x)$
+	is irreducible over $F$ and if $f(\alpha) = 0$, then $p(x) \mid f(x)$.
+\end{theorem}
+\begin{definition}
+	We say that $p(x)$ (as defined in the previous theorem) is the \textbf{irreducible polynomial for $\alpha$ over $F$}. We denote it 
+	$\irr(\alpha, F)$. The \textbf{degree of $\alpha$ over $F$} is given by $\deg(\alpha, F) = \deg(\irr(\alpha, F))$.
+\end{definition}
+Let's prove the theorem using this information. Our approach will be to use the division algorithm for polynomials.
+\begin{proof}
+	First, suppose $p(x) \in F[x]$ is reducible. \\
+	Then it can be written $p(x) = f(x)g(x)$ for functions $f, g \in F[x]$. \\
+	Plug in $x = \alpha$. Then $p(\alpha) = 0 = f(\alpha) \cdot g(\alpha) \implies$ either $f(\alpha) = 0$ or $g(\alpha) = 0$. \\
+	But contradiction: $p(x)$ is the polynomial of least degree for which $\alpha$ is a root. \\
+	So $p(x)$ is irreducible over $F$. \\
+	Now suppose that $\alpha$ is a root of some function $h(x) \in F[x]$. \\
+	Then divide $h$ by $p$: $h(x) = p(x)q(x) + r(x)$ where $0 < \deg(r) < \deg(p)$ or $r(x) = 0$. \\
+	Plugging in $\alpha$, we see $h(\alpha) = 0 = p(\alpha)q(\alpha) + r(\alpha)$. \\
+	But $p(\alpha) = 0$, so $0 = p(\alpha)q(\alpha) + r(\alpha) = r(\alpha) \implies r(\alpha) = 0$. \\
+	So $p(x) \mid h(x)$.
+\end{proof}
+To apply the theorem and definition to our previous example, we see that $\irr(\alpha, \rationals) = x^4 - 10x^2 + 1$ and 
+$\deg(\alpha, \rationals) = 4$. Let's do another example. Suppose we want to find the roots of the polynomial $f(x) = x^2 + x + 1$. Over 
+$\integers_2$, we can plug in $x = 0$ and $x = 1$ to quickly see that $f(x)$ is irreducible. Yet suppose $\alpha$ is a root of the polynomial
+in some extension field $\integers_2(\alpha)$. Then just like in our other extension fields, elements in $\integers_2(\alpha)$ look like
+$a + b\alpha$ where $a, b \in \integers_2$. Since there are only two possibilities for $a, b$ in this case, we can describe the extension field
+fully as the following set:
+\[
+	\integers_2(\alpha) = \{ 0, 1, \alpha, \alpha + 1 \}
+\]
+If we divide the linear term $(x - \alpha)$ into $f(x)$, we get the quotient $x + (1 + \alpha)$. So we have found a root of the function
+$f(x) = x^2 + x + 1$ in some field, namely $\integers_2(\alpha)$. To summarize, we have the following important theorem:
+\begin{theorem}
+	Let $F[x]$ be a ring of polynomials. If $f(x) \in F[x]$, then there exists an extension field $E$ with $F \leq E$ where $f(x)$ has a root in $E$.
+\end{theorem}
+
+\newpage
+\section{Extension Fields as Vector Spaces}
+As mentioned in the last section, we can think of elements in an extension field as linear combinations of basis elements. The following theorem
+summarizes this idea.
+\begin{theorem}
+	Suppose $\alpha$ is algebraic over $F$ and consider $E = F(\alpha)$. Then any $\beta \in E$ can be written uniquely as:
+	\[
+		\beta = a_0 + a_1\alpha + \cdots + a_{n-1}\alpha^{n-1}
+	\]
+	where $a_i \in F$.
+\end{theorem}
+So if we have some power of $\alpha$ higher than $n - 1$, we can rewrite it as a linear combination of lower powers of $\alpha$. To prove this
+theorem, we need to prove both existence and uniqueness.
+\begin{proof}
+	Since $\alpha$ is algebraic over $F$, $\alpha$ is a root of some irreducible, monic polynomial $p(x) = c_0 + c_1x + \cdots + x^n$
+	choosing $c_i \in F$ appropriately. \\
+	So $c_0 + c_1\alpha + \cdots + \alpha^n = 0$, or rearranged $\alpha^n = -c_{n-1}\alpha^{n-1} - \cdots - c_0$. \\
+	But suppose $\beta$ is not written uniquely. \\
+	Then renaming the $c_i$ from before to $a_i$, we know:
+	\[
+		\beta = a_0 + a_1\alpha + \cdots + a_{n-1}\alpha^{n-1} = b_0 + b_1\alpha + \cdots + b_{n-1}\alpha^{n-1}
+	\]
+	But then $\beta - \beta = 0$, so we have:
+	\[
+		(a_0 - b_0) + (a_1 + b_1)\alpha + \cdots + (a_{n-1} + b_{n-1})\alpha^{n-1}
+	\]
+	Where at least one coefficient has $a_i - b_i \neq 0$. \\
+	So $\beta$ is a linear combination of $\{ 1, \alpha, \cdots, \alpha^{n-1} \}$ and $\alpha$ is therefore a root of some polynomial of
+	degree less than $n$.
+\end{proof}
+
+So we can view any extension field $F(\alpha)$ as a vector space with dimension $\dim(F(\alpha)) = \deg(\irr(\alpha, F))$. For example, consider
+the polynomial $x^4 - 6x^2 + 3$ over $\rationals$. If we take $\alpha = \sqrt{3 - \sqrt{6}}$, then 
+$\alpha^4 = 6\alpha^2 + 3 \implies \deg(\irr(\alpha, \rationals)) = 4$. So we can take the set $\{ 1, \alpha, \alpha^2, \alpha^3 \}$ to be a basis
+for $\rationals(\alpha)$. If we instead work in the field $\rationals(\sqrt{6})$, we instead have $\irr(\alpha, \rationals(\sqrt{6}) = x^2 - 3 + \sqrt{6}$
+since $\alpha^2 = 3 - \sqrt{6} \in \rationals(\sqrt{6})$. So our basis might instead look like $\{ 1, \alpha \}$ in order to generate all of 
+$\rationals(\alpha)$. The following theorem summarizes these ideas.
+
+\begin{theorem}
+	If $\deg(\alpha, F) = n$, then $F(\alpha)$ is a vector space with dimension $n$ over $F$ with basis $\{ 1, \alpha, \cdots, \alpha^{n-1} \}$.
+	Furthermore, if $\beta \in F(\alpha)$, then $\beta$ is algebraic over $F$ and $\deg(\beta, F) \leq n$.
+\end{theorem}
+\begin{proof}
+	Since $\alpha^n + a_{n-1}\alpha^{n-1} + \cdots + a_0 = 0$, then any element in $F(\alpha)$ with degree (of $\alpha$) greater than $n$
+	can be rewritten as a linear combination of $\{ 1, \alpha, \cdots, \alpha^{n-1} \}$. \\
+	Suppose $\beta \in F(\alpha)$. \\
+	Then we have $n+1$ elements in the set $\{ 1, \beta, \cdots, \beta^n \}$, but our vector space has $n$ elements. \\
+	So clearly the set is linearly dependent. \\
+	Then $b_n \beta^n + b_{n-1}\beta^{n-1} + \cdots + b_0 = 0$ with at least one $b_i = 0$. \\
+	Therefore $\beta$ is a root of some polynomial $f(x) \in F[x]$ so $\beta$ is algebraic over $F$. \\
+	Furthermore, $\deg(f) \leq n$.
+\end{proof}
+
+\newpage
+\section{Field Extensions Continued}
+\begin{definition}
+	$E$ is an \textbf{algebraic extension} of $F$ if and only if every element in $E$ is algebraic over $F$.
+\end{definition}
+\begin{definition}
+	$E$ is a \textbf{finite extension} of $F$ if and only if $E$ is a finite-dimensional vector space over $F$.
+\end{definition}
+So consider the extension $\rationals(\sqrt{2}, \sqrt{3}, \cdots, \sqrt{p})$ for each prime $p$. This is an infinite-dimensional vector space, and
+thus is not a finite extension of $\rationals$. It is an algebraic extension, however, since we can square all elements and eventually get rational
+numbers. It turns out that if a field extension is finite, then it will be algebraic.
+\begin{theorem}
+	If $E$ is a finite extension of $F$, then $E$ is an algebraic extension of $F$.
+\end{theorem}
+\begin{proof}
+	Suppose $E$ over $F$ is finite. \\
+	Then $[ E : F ] = n$, the dimension of $E$ as a vector space. \\
+	Pick $\beta \in E$ and consider $1, \beta, \cdots, \beta^n$. \\
+	Then we have $n+1$ elements and our vector space is $n$-dimensional. \\
+	So $1, \beta, \cdots, \beta^n$ are linearly dependent. \\
+	Then $a_0 + a_1\beta + \cdots + a_n \beta^n = 0$ with at least one $a_i \neq 0, a_i \in F$. \\
+	Then $\beta$ is a root of $a_0 + a_1 x + \cdots + a_n x^n$, so $\beta$ is algebraic over $F$.
+\end{proof}
+The following theorem also illustrates another behavior of field extensions. If we have a ``tower" of fields, then we can compute the dimension
+of the greatest extension from the smaller ones as follows.
+\begin{definition}
+	Let $E$ be a finite extension field of $F$. Then $[ E : F ] = \dim(E/F) = \deg(E/F)$.
+\end{definition}
+\begin{theorem}
+	If $F \leq E \leq K$, then $[ K : F ] = [ K : E ][E : F]$.
+\end{theorem}
+\begin{proof}
+	Suppose $\{ \vec{v}_i\}_{i = 1}^{n}$ is a basis for $K$ over $E$ and $\{ \vec{w}_j\}_{j = 1}^{m}$ is a basis for $E$ over $F$. \\
+	Then $[K : E] = n$ and $[E : F] = m$. \\
+	Now consider $\{ \vec{v}_i \vec{w}_j \}$. We want to show this is a basis for $K$ over $F$. \\
+	To show this is a generating set, pick $\alpha \in K$. We want to show $\alpha$ is a linear combination of $\vec{v}_i, \vec{w}_j$. \\
+	We can then write $\alpha$ as:
+	\[
+		\alpha = \sum_{i = 1}^{n} a_i \vec{v}_i
+	\] 
+	where $a_i \in E$ and $E$ is a vector space over $F$. \\
+	But we can write each $a_i$ as:
+	\[
+		a_i = \sum_{j = 1}^{m} b_{ij}\vec{w}_j \forall a_i
+	\]
+	where $b_{ij} \in F$. We can then combine these two equations to see see:
+	\[
+		\alpha = \sum_{i = 1}^n \sum_{j = 1}^m b_{ij} \vec{w}_j \vec{v}_i
+	\]
+	Therefore $\{ \vec{v}_i \vec{w}_j \}$ generates all of $K$. The proof for linear independence is left out, but can be shown relatively
+	easily.
+\end{proof}
+We can also extend this theorem to the more general case where we have a taller ``tower" of fields.
+\begin{corollary}
+	Suppose $F_1 \leq F_2 \leq \cdots \leq F_n$. Then $[ F_n : F_1 ]$ is given by:
+	\[
+		[ F_n : F_1 ] = \prod_{i = 0}^{n - 2} [ F_{n - i} : F_{n - i - 1} ]
+	\]
+\end{corollary}
+This can be proven relatively easily by mathematical induction. Since we now have products, we can also ask about divisibility.
+\begin{corollary}
+	Suppose $\beta \in F(\alpha)$. Then $[ F(\beta) : F ] \mid [ F(\alpha) : F]$.
+\end{corollary}
+\begin{proof}
+	Using the previous theorems, we know $[ F(\alpha) : F ] = [ F(\alpha) : F(\beta) ][ F(\beta) : F ]$ since
+	$F \leq F(\beta) \leq F(\alpha)$.
+\end{proof}
+
+Finally, to move onto the next topic we need to introduce one more idea.
+\begin{definition}
+	A field is said to be \textbf{algebraically closed} if and only if we cannot algebraically extend it. So, if $F$ is closed, then any polynomial
+	with coefficients in $F$ has a root in $F[x]$.
+\end{definition}
+It is implicit in this definition, then, that the only irreducible polynomials in an algebraically closed field $F[x]$ are linear, and any polynomial with
+higher degree (with coefficients in $F$) factors into a product of linear terms. The standard example is $\complexNumbers$.
+
+\newpage
+\section{Constructions}
+To do constructions, we start with a unit line segment. The length of the line segment, regardless of its exact measure, will then be used to 
+construct other numbers on the plane. For example, from the unit segment we get the point $(1,0)$. We can then use a compass to get the
+points $(2, 0)$ and $(-1, 0)$, as well as points with y-coordinates like $(0, 1)$ and $(0, -1)$. Given lines of length $\alpha$ and $\beta \neq 0$,
+we can get $\frac{\alpha}{\beta}$ by constructing similar triangles.
+\begin{definition}
+	A number $\alpha$ is constructable if and only if a line segment of $\mid \alpha \mid$ can be constructed from the unit segment in a
+	finite number of steps.
+\end{definition}
+The easily constructable numbers are the rationals, but we can also create field extensions of $\rationals$ by adding square roots, done
+by intersecting lines with circles. Overall, it is clear then that the set of constructable numbers is a field, always a subfield of $\reals$. 
+\begin{theorem}
+	If $\gamma$ is a constructable number, then there is a finite sequence of constructable $\alpha_1, \alpha_2, \cdots, \alpha_n$ with
+	$\alpha_i = \gamma$ for some $i \in \naturals$ with $1 \leq i \leq n$ where 
+	$[ \rationals(\alpha_1, \alpha_2, \cdots, \alpha_n) : \rationals ] = 2^n$, and so $[ \rationals(\gamma) : \rationals] = 2^r$ for some 
+	$r \in \naturals$.
+\end{theorem}
+Now since $\gamma \in \rationals(\alpha_1, \alpha_2, \cdots, \alpha_n)$, then $2^n = [ \rationals(\alpha_1, \alpha_2, \cdots, \alpha_n)
+ : \rationals ] = [ \rationals(\alpha_1, \alpha_2, \cdots, \alpha_n) : \rationals(\gamma) ] [ \rationals(\gamma) : \rationals]$ where 
+ $[ \rationals(\gamma) : \rationals ] = 2^r$. So $\rationals(\gamma) \subset \rationals(\alpha_1, \alpha_2, \cdots, \alpha_n)$. We can now use
+ these facts to prove some historically important theorems.
+ 
+\begin{theorem}
+	You cannot double a cube. For example, starting with a cube of volume 1, you cannot construct a cube of volume 2.
+\end{theorem}
+\begin{proof}
+	Assume for contradiction that we can. \\
+	Then for a cube of volume 2, each of its side lengths are $\sqrt[3]{2}$. \\
+	But $[ \rationals(\sqrt[3]{2}) : \rationals ] = 3$ and $3 \neq 2^r$ for any $r \in \integers$, so contradiction. \\
+\end{proof}
+\begin{theorem}
+	You cannot square a circle. So, for example, given a circle of radius 1, we cannot construct a square that also has area $\pi$.
+\end{theorem}
+\begin{proof}
+	Assume that in general, we can square a circle. Then consider a circle with radius 1. \\
+	Since the circle has area $\pi$, the square would need side lengths $\sqrt{\pi}$. \\
+	But $\sqrt{\pi}$ is transcendental over $\rationals$, which implies $\sqrt{\pi} \neq 2^r$ for any $r \in \integers$, so contradiction.
+\end{proof}
+\begin{theorem}
+	You cannot trisect an angle.
+\end{theorem}
+\begin{proof}
+	Assume you can trisect $\theta = 60^\circ$. Then we need to construct $\phi = 20^\circ$. \\
+	Now you can show that $\phi$ is constructable if and only if a line segment of $\cos(\phi)$ is constructable. \\
+	But recall $\cos(3\phi) = 4\cos^3(\phi) - 3\cos(\phi)$ and $\cos(3\phi) = \cos(60^\circ) = \frac{1}{2}$. \\
+	So $\cos(3\phi) = \frac{1}{2} = 4\alpha^3 - 3\alpha$ for some $\alpha$. \\
+	Then $\alpha$ is a root of the polynomial $8x^3 - 6x -1$, which is irreducible over $\rationals$. \\
+	But $[ \rationals(\alpha) : \rationals ] = 3 \neq 2^r$ for any $r \in \integers$. So contradiction.
+\end{proof}
+
+\newpage
+\section{Galois Theory}
+The next concept that we will explore is the relationship between field extensions (particularly, in relation to roots of polynomials) and groups
+of automorphisms. This will allow us to prove the insolvability of quintic polynomials in general, and more.
+\begin{definition}
+	Recall that $f$ is an \textbf{isomorphism} from $F$ to $F'$ if and only if $f$ is one-to-one, onto, and $\forall a, b \in F, f(ab) = f(a)f(b)$ and
+	$f(a + b) = f(a) + f(b)$.
+\end{definition}
+\begin{definition}
+	$f$ is an \textbf{automorphism} if and only if $f$ is an isomorphism from $F$ to $F$, itself.
+\end{definition}
+We also need to rigorously define the idea of two field elements being conjugates. In previous courses in algebra and calculus, we saw that
+expressions like $x + \sqrt{2}$ could often by simplified by multiplying by their conjugate. In this case, $x + \sqrt{2}$'s conjugate is $x - \sqrt{2}$, 
+but recall that we also talked about conjugates of complex numbers. The two ideas can be related by the following definition.
+\begin{definition}
+	$\alpha$ and $\beta$ are said to be \textbf{conjugates} if and only if $\irr(\alpha, F) = \irr(\beta, F)$.
+\end{definition}
+For example, consider $\sqrt{17}$ and $-\sqrt{17}$ over $\rationals$. These two numbers are conjugate since $\irr(\pm\sqrt{17}, F) = x^2 - 17$.
+Conversely, consider the function $f(x) = x^2 + x + 1$ over $\integers_2$. Since $\alpha, \alpha + 1 \in \integers_2(\alpha)$ are both roots, they
+are conjugates over $\integers_2$.
+
+Now consider the polynomial $g(x) = x^3 - 5$ over $\rationals$. Clearly, $\alpha = \sqrt[3]{5}$ is a real root, but the other two roots are complex.
+It turns out that for:
+\[
+	\omega = \frac{-1 + \sqrt{-3}}{2}
+\]
+which is called a primitive cube root of 1, the other roots are $\omega \sqrt[3]{5}$ and $\omega^2 \sqrt[3]{5}$. This result can be derived by
+factoring $g(x)$ into $(x - \alpha)(x^2 + \alpha x + \alpha^2)$ then applying the quadratic formula to the second factor. So by the above
+definitions, $\alpha, \omega \alpha$, and $\omega^2 \alpha$ are all conjugates over $\rationals$ since they share the same irreducible
+polynomial over $\rationals$, namely $g(x)$. You could construct a tower of fields here, building up from $\rationals$ to $\rationals(\alpha$ and 
+$\rationals(\omega)$ up to $\rationals(\alpha, \omega)$. The extension degrees and bases would be $[ \rationals(\alpha) : \rationals ] = 3$ with
+basis $\{ 1, \sqrt[3]{5}, \sqrt[3]{25} \}$, $[ \rationals(\alpha, \omega) : \rationals(\alpha) ] = 2$ since $\omega$ is a root of 
+$x^2 + \alpha x + \alpha^2$ with basis $\{ 1, \omega \}$, and $[ \rationals(\alpha, \omega) : \rationals ] = 6$.
+
+To begin tying these concepts into the discussion of automorphisms, consider the following theorem.
+\begin{theorem}[The Conjugation Isomorphisms]
+	Suppose $\alpha, \beta$ are algebraic over $F$ with $\deg(\alpha, F) = n$. Take $\phi: F(\alpha) \to F(\beta)$ defined by
+	$\phi(c_0 + c_1\alpha + \cdots + c_{n-1}\alpha^{n-1}) = c_0 + c_1\beta + \cdots + c_{n-1}\beta^{n-1}$. Then $\phi$ is an isomorphism
+	if and only if $\alpha$ is conjugate to $\beta$ (i.e. $\irr(\alpha, F) = \irr(\beta, F)$). Elements in $F$ are left fixed and there exists exactly
+	one such isomorphism for each $\beta$ conjugate to $\alpha$, leaving $F$ fixed.
+\end{theorem}
+So ultimately, our field isomorphisms send conjugates in one field to conjugates in another field. This means that automorphisms bring
+conjugates to conjugates in the same field. Interestingly, this idea is a direct analog to linear transformations; we might describe
+the behavior of a linear transformation by showing its action on basis vectors. For example, $f: \rationals(\sqrt{2}) \to \rationals(\sqrt{2})$ by
+$id: \sqrt{2} \to \sqrt{2}$ and $\sigma_1: \sqrt{2} \to \sqrt{2}$ fully describes two field isomorphisms (in fact, automorphisms in this case). As
+another example, we might consider $g: \rationals(\sqrt[3]{5}) \to \rationals(\omega \sqrt[3]{5})$ by $\sqrt[3]{5} \to \omega \sqrt[3]{5}$, or in other
+words $g(a + b\sqrt[3]{5} + c\sqrt[3]{25}) = a + b\omega\sqrt[3]{5} + c\omega\sqrt[3]{25}$. This example is not an automorphism since it sends
+elements from one field to a different field, despite acting on ``basis" elements.
+
+\begin{definition}
+	Let $\sigma: F \to F$ be an automorphism. We say $a \in F$ is \textbf{left fixed} by $\sigma$ if and only if $\sigma(a) = a$. We can denote
+	the set of all elements left fixed by $\sigma$ as $F_{ \sigma }$, called the \textbf{fixed field} of $\sigma$. Furthermore, given a set of
+	automorphisms $\sigma_i: F \to F$, we say that $a \in F$ is left fixed by $\{ \sigma_i \}$ if and only if $\forall i, \sigma_i(a) = a$, and we
+	can denote the set of such elements $F_{\{ \sigma_i \}}$.
+\end{definition}
+\begin{theorem}
+	If $F \leq E$, then $E_{\{ \sigma_i \}} \leq E$ (i.e. $E_{\{ \sigma_i \}}$ is a subfield of $E$).
+\end{theorem}
+\begin{proof}
+	Suppose $F \leq E$ and $\forall i \in I, \sigma_i: E \to E$ is an automorphism. \\
+	Then $E_{\{ \sigma_i \} } \neq \emptyset$ since $F \leq E_{\{ \sigma_i \} }$. \\
+	Now let $a, b \in E_{\{ \sigma_i \} }$. \\
+	Then $\sigma(a + b) = \sigma(a) + \sigma(b) = a + b$ since $\sigma$ is an automorphism. \\
+	Similarly, $\sigma(ab) = \sigma(a) \cdot \sigma(b) = ab$. \\
+	$\therefore E_{\{ \sigma_i \}}$ is a subfield of $E$.
+\end{proof}
+
+We can now begin to discuss the group structures involved.
+\begin{theorem}
+	Suppose $F \leq E$. Then the set of automorphisms of $E$ is a group under function composition.
+\end{theorem}
+\begin{proof}
+	Now clearly the set of all automorphisms of $E$ is a subset of $S_E$, the set of permutations on $E$. \\
+	So let $\sigma_1$ and $\sigma_2$ be automorphisms of $E$. \\
+	Then $\sigma_1 \circ \sigma_2$ is an automorphism because both are automorphisms. \\
+	We also know that the identity permutation, $id = \iota$, is an automorphism as well since $\forall a \in E, \iota(a) = a$. \\
+	Finally, since $\sigma_1$ is a permutation, then $\sigma_1^{-1}$ exists and is an automorphism as well, since $\sigma_1$
+	is an automorphism. \\
+	$\therefore$ the set of automorphisms of $E$ is a group.
+\end{proof}
+\begin{theorem}
+	Suppose $F \leq E$. Then the set of all automorphisms of $E$ leaving $F$ fixed is a subgroup of all automorphisms of $E$. We denote
+	it by $G(E/F)$ and refer to this group as the \textbf{Galois group} of $E$ over $F$.
+\end{theorem}
+\begin{proof}
+	Let $\sigma, \tau \in G(E/F)$. \\
+	Then if we let $a \in F$, $\sigma(\tau(a)) = \sigma(a) = a \implies \sigma \circ \tau \in G(E/F)$. \\
+	Furthermore, $id = \iota$ has $\iota(a) = a$, so $\iota \in G(E/F)$. \\
+	Finally if $\sigma(a) = a$, then $\sigma^{-1}(a) = a$ so $\sigma^{-1} \in G(E/F)$. \\
+	$\therefore G(E/F)$ is a subgroup of the set of all automorphisms of $E$.
+\end{proof}
+For example, suppose we have a tower of fields with $\rationals(\sqrt{7}, \sqrt{11})$ on top with $[ \rationals(\sqrt{7}, \sqrt{11}) : rationals ] = 4$
+and both $\rationals(\sqrt{7})$, $\rationals(\sqrt{11})$ one level below each with extension degree 2 over $\rationals$. Now consider
+$G(\rationals(\sqrt{7})/\rationals) = \{ id, \, \sigma_1: \sqrt{7} \to -\sqrt{7} \}$. Then if we consider the set of all automorphisms of 
+$\rationals(\sqrt{7}, \sqrt{11})$ over $\rationals$, we have:
+\[
+	G(\rationals(\sqrt{7}, \sqrt{11}) / \rationals) = \{ \iota = id, \, \tau_1: \sqrt{7} \to -\sqrt{7}, \sqrt{11} \to \sqrt{11}, \tau_2, \tau_3 \}
+\]
+Interestingly, we can view $\tau_1$ as an extension of $\sigma_1$ since it performs the same action on $\rationals(\sqrt{7})$. This serves to
+motivate the following theorem:
+\begin{theorem}[Isomorphism Extension Theorem]
+	Suppose $\sigma: F \to F'$ is an isomorphism. Then if $E$ is an extension field of $F$, then $\exists \tau: E \to E'$ such that 
+	$\forall a \in F, \tau(a) = \sigma(a)$.
+\end{theorem}
+To continue the previous example (defining $\tau_2: \sqrt{7} \to \sqrt{7}, \sqrt{11} \to -\sqrt{11}$ and $\tau_3: \sqrt{7} \to -\sqrt{7}, \sqrt{11} \to
+-\sqrt{11}$), $\tau_2$ and $\tau_3$ can also be seen as extensions of $\sigma_2: \sqrt{11} \to -\sqrt{11}$. Looking from 
+$\rationals(\sqrt{7}, \sqrt{11})$ over $\rationals$, all of these isomorphisms are actually automorphisms, each an extension of the identity.
+\begin{theorem}
+	The number of extensions of $\sigma$ from $F$ to $F$ depends only on $E$ and $F$; not on $\sigma$.
+\end{theorem}
+\begin{definition}
+	We can denote the \textbf{index of $E$ over $F$} as $\{ E : F \}$, the number of isomorphisms from $E$ to $E'$ leaving all $F$ fixed, or
+	equivalently, the number of extensions of $\sigma: F \to F'$ bringing $E$ to $E'$.
+\end{definition}
+\begin{theorem}
+	Let $F \leq E \leq K$. Then $\{ K : F \} = \{ K : E \}\{ E : F \}$.
+\end{theorem}
+
+Finally, one of the last concepts we'll need is being able to say for certain where (in what field) the roots of a polynomial are, and whether
+or not any roots are repeated.
+\begin{definition}
+	We say that $E$ is a \textbf{splitting field} of $p(x)$ over $F$ if and only if $E$ is the smallest field containing $F$ and all the roots of 
+	$p(x)$. Furthermore, if $E$ is a splitting field of $F$, then every irreducible polynomial $p(x) \in F[x]$ splits in $E$ (so all of its
+	roots are in $E$).
+\end{definition}
+\begin{theorem}
+	If $E$ is a splitting field of finite degree over $F$, then $\{ E : F \} = | G(E/F) |$.
+\end{theorem}
+\begin{definition}
+	Let $F \leq E$. Then $E$ is \textbf{separable} over $F$ if and only if $[ E : F ] = \{ E : F \}$.
+\end{definition}
+\begin{theorem}
+	$K$ is separable over $F$ if and only if $K$ is separable over $E$ and $E$ is separable over $F$. Additionally, an irreducible polynomial
+	$p(x)$ is separable over $F$ if and only if it has no repeated roots.
+\end{theorem}
+Now with the following definition, we can establish the main theorem in Galois theory.
+\begin{definition}
+	$K$ is a \textbf{normal extension} of $F$ if and only if $K$ is a separable splitting field over $F$.
+\end{definition}
+\begin{theorem}[Main Theorem of Galois Theory]
+	Let $K$ be a finite, normal extension field of $F$ with Galois group $G(K/F)$ (in class, our condition was $K$ is a splitting field of $F$).
+	Then for a field $E$ with $F \leq E \leq K$, let $\lambda(E)$ be the subgroup of $G(K/F)$ leaving $E$ fixed. Then:
+	\begin{enumerate}
+		\item{$\lambda(E) = G(K/E)$}
+		\item{$[ K : E ] = | \lambda(E) | = \{ K : E \}$ }
+		\item{$E$ is a normal subgroup of $F$ if and only if $\lambda(E)$ is a normal subgroup of $G(K/F)$. When this is true,
+		$G(E/F) \simeq G(K/F)G(K/E)$ }
+		\item{The tower of fields for a field extension and the group diagram for the Galois groups are similar, but flipped.}
+	\end{enumerate}
+\end{theorem}
+
+Finally, we can address the problem of the insolvability of the quintic.
+\begin{definition}
+	$p(x) \in \rationals[x]$ is \textbf{solvable by radicals} if and only if $G(K/\rationals)$ is a solvable group where $K$ is the splitting field of
+	$p(x)$.
+\end{definition}
+\begin{definition}
+	$G$ is \textbf{solvable} if and only if we can construct a sequence of $H_i$ such that $id \leq H_1 \leq \cdots \leq G$ where each $H_i$
+	is normal in $G$ and $H_i/H_{i-1}$ is abelian.
+\end{definition}
+\begin{theorem}
+	There exists a polynomial $p(x) \in \rationals[x]$ with $\deg(p(x)) = 5$ such that $G(K/\rationals) \simeq S_5$, which is not solvable by
+	radicals.
+\end{theorem}
+	
+\end{document}

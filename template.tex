@@ -1,0 +1,52 @@
+
+\documentclass[11pt]{amsart}
+
+\usepackage{geometry}
+\geometry{letterpaper}
+\usepackage[parfill]{parskip}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+% theorems, definitions, proofs, etc.
+\newtheorem{theorem}{Theorem}[section]
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem*{remark}{Remark}
+\newtheorem{corollary}[theorem]{Corollary}
+
+% number systems
+\newcommand{\complexNumbers}{\mathbb{C}}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\rationals}{\mathbb{Q}}
+\newcommand{\integers}{\mathbb{Z}}
+\newcommand{\naturals}{\mathbb{N}}
+\newcommand{\primes}{\mathbb{P}}
+
+% specific character styling
+\let\oldemptyset\emptyset
+\let\emptyset\varnothing
+
+% operators
+\DeclareMathOperator{\Dom}{Dom}
+\DeclareMathOperator{\Ran}{Ran}
+
+% ring commands
+\newcommand{\ring}{(R, +, \, \cdot)}
+\newcommand{\ringSecondOp}{(R, \, \cdot)}
+
+% sequences
+\newcommand{\seq}{\{ x_n \}}
+
+\title{Title}
+\author{Phil Mayer}
+
+\begin{document}
+\maketitle
+
+\section{Section}
+
+
+\end{document}

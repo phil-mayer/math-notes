@@ -1,0 +1,197 @@
+
+\documentclass[11pt]{amsart}
+
+\usepackage{geometry}
+\geometry{letterpaper}
+\usepackage[parfill]{parskip}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+% theorems, definitions, proofs, etc.
+\newtheorem{theorem}{Theorem}[section]
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem*{remark}{Remark}
+\newtheorem{corollary}[theorem]{Corollary}
+
+% number systems
+\newcommand{\complexNumbers}{\mathbb{C}}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\rationals}{\mathbb{Q}}
+\newcommand{\integers}{\mathbb{Z}}
+\newcommand{\naturals}{\mathbb{N}}
+\newcommand{\primes}{\mathbb{P}}
+
+% specific character styling
+\let\oldemptyset\emptyset
+\let\emptyset\varnothing
+
+% operators
+\DeclareMathOperator{\Dom}{Dom}
+\DeclareMathOperator{\Ran}{Ran}
+
+% ring commands
+\newcommand{\ring}{(R, +, \, \cdot)}
+\newcommand{\ringSecondOp}{(R, \, \cdot)}
+
+% sequences
+\newcommand{\seq}{\{ x_n \}}
+
+\title{Study Guide: Real Analysis}
+\author{Phil Mayer}
+
+\begin{document}
+\maketitle
+
+\section{Getting Started}
+\begin{definition}
+	The \textbf{Archimedian Property} of the real numbers says $\forall x \in \reals, \exists n \in \naturals$ such that $x < n$.
+\end{definition}
+\begin{definition}
+	A set $S$ is \textbf{bounded} if and only if $\exists M \in \reals$ such that $\forall s \in S$, $|s| \leq M$. We say that a set is
+	\textbf{bounded above} if $\exists M \in \reals$ such that $s \leq M$, or \textbf{bounded below} if $\exists m \in \reals$ such that $m \leq s$.
+\end{definition}
+\begin{definition}
+	A set is \textbf{unbounded} if and only if $\forall M \in \reals, \exists s \in S$ such that $M < |s|$.
+\end{definition}
+\begin{definition}
+	A set $S \subset \reals$ has \textbf{supremum} $\sup(S) = \sup(a, b) = b$ if and only if $b$ is an upper bound for $S$ and $b$ is the
+	\textit{least} of all other upper bounds. So $\forall x \in S, x \leq b$ and $\forall \beta < b \; \exists s \in S$ such that $\beta < s$.
+\end{definition}
+\begin{definition}
+	We define the \textbf{infimum} of a set $S$ similarly: $\forall x \in S, a \leq x$ and 
+	\newline
+	$\forall \alpha > a \; \exists s \in S$ such that $a < \alpha$.	
+\end{definition}
+\begin{definition}
+	For some $\epsilon > 0$, define the \textbf{ball of radius $\epsilon$ around $x \in \reals$} as $B_{\epsilon}(x) = (x - \epsilon, x + \epsilon)$.
+\end{definition}
+
+\section{Sequences}
+\begin{definition}
+	We say $\seq_{n = 1}^{\infty} \subset \reals$ is a \textbf{sequence} in the reals. We denote it $\seq$.
+\end{definition}
+\begin{definition}
+	$\seq$ is \textbf{monotone increasing} if and only if $\forall n \in \naturals$, $x_n \leq x_{n+1}$. Similarly, $\seq$ is \textbf{monotone
+	decreasing} if and only if $\forall n \in \naturals$, $x_n \geq x_{n+1}$.
+\end{definition}
+\begin{definition}
+	A sequence $\seq$ is \textbf{bounded} if and only if $\exists M \in \reals$ such that $\forall n \in \naturals, | x_n | \leq M$. Bounded above
+	and below can be defined similarly, based on the definition of boundedness of sets.
+\end{definition}
+\begin{definition}
+	A sequence $\seq$ \textbf{converges} to some limit $L$ if and only if $\forall \epsilon > 0, \exists K \in \reals$ such that 
+	$\forall n > K, n \in \naturals, | x_n - L | < \epsilon$.
+\end{definition}
+\begin{definition}
+	A sequence $\seq$ does not converge to some limit $L$ if and only if $\exists \epsilon > 0$ such that 
+	$\forall K \in \reals, \exists n > K$ such that $| x_n - L | \geq \epsilon$.
+\end{definition}
+\begin{definition}
+	A sequence $\seq$ is \textbf{Cauchy} if and only if $\forall \epsilon > 0, \exists K \in \reals$ such that 
+	$\forall m, n \in \naturals$, if $m, n > K$ then $| x_n - x_m | < \epsilon$.
+\end{definition}
+\begin{theorem}[Squeeze Theorem]
+	Suppose $\{ a_n \}, \{ b_n \},$ and $\{ c_n \}$ are sequences where $\{ a_n \}, \{ b_n \} \to L$ and 
+	$\forall n \in \naturals, a_n \leq b_n \leq c_n$. Then $\{ b_n \} \to L$.
+\end{theorem}
+To prove the Squeeze Theorem, use the convergence of $\{ a_n \}$ and $\{ c_n \}$ to choose $\epsilon_1 = \epsilon_2 = \epsilon$, then get
+$K_1$ so that $\forall n > K_1, |a_n - L| < \epsilon$. This gives us a lower bound on $a_n$: $L - \epsilon < a_n$. We get $K_2$ similarly
+so that $c_n < L + \epsilon$. The $\epsilon / 2$ trick may also help here.
+\begin{theorem}
+	Let $\{ a_n \} \to a$ and $\{ b_n \} \to b$. Then $\{ a_n  \pm b_n \} \to a \pm b$ and $\{ a_n b_n \} \to ab$. If $\lambda \in \reals$, then
+	$\{ \lambda a_n \} \to \lambda a$. If $b_n \neq 0 \: \forall n \in \naturals$ and $b \neq 0$, then $\{ \frac{a_n}{b_n} \} \to \frac{a}{b}$.
+\end{theorem}
+\begin{theorem}
+	$\seq$ converges $\iff$ $\seq$ Cauchy $\iff$ $\seq$ is bounded and monotone.
+\end{theorem}
+\begin{theorem}
+	Let $S$ be a non-empty set of real numbers which is bounded above. Then $S$ has a unique supremum.
+\end{theorem}
+\begin{theorem}[Bolzano-Weierstrass]
+	Every bounded sequence $\seq \subset \reals$ has a convergent subsequence.
+\end{theorem}
+
+\section{Continuity}
+\begin{definition}
+	A function $f$ is \textbf{continuous} at $c \in \Dom(f)$ if and only if $\forall \seq \subset \Dom(f)$ where $\lim_{n \to \infty} x_n = c$, we have
+	$\lim_{n \to \infty} f(x_n) = f(c)$.
+\end{definition}
+\begin{theorem}
+	For all powers $p \in \integers, f(x) = x^p$ is continuous over its domain.
+\end{theorem}
+\begin{theorem}
+	If $f$ and $g$ are continuous functions, then $f \pm g, fg$, and $f \circ g$ are continuous on $\Dom(f) \cap \Dom(g)$. If 
+	$g(x) \neq 0 \; \forall x \in \Dom(g)$, then $\frac{f}{g}$ is continuous. So any polynomial function is continuous.
+\end{theorem}
+\begin{definition}
+	$f$ is \textbf{discontinuous} at $c \in \Dom(f)$ if and only if $\exists \seq \subset \Dom(f)$ such that $\lim_{n \to \infty} x_n = c$ and 
+	$\lim_{n \to \infty} f(x_n) \neq f(c).$
+\end{definition}
+\begin{definition}
+	$f$ is \textbf{bounded} if and only if $\exists M \in \reals$ such that $\forall x \in \Dom(f), |f(x)| \leq M$.
+\end{definition}
+\begin{definition}
+	$f$ has limit $L$ at $x = a$, or $\lim_{x \to a} f(x) = L$, if and only if $\forall \epsilon > 0, \exists \delta > 0$ such that 
+	$\forall x \in \Dom(f)$, if $0 < | x - a | < \delta$ then $| f(x) - L | < \epsilon$.
+\end{definition}
+\begin{definition}[$\epsilon-\delta$]
+	$f$ is \textbf{continuous} at $c \in \Dom(f)$ if and only if $\forall \epsilon > 0, \exists \delta > 0$ such that $\forall x \in \Dom(f)$, if 
+	$| x - c | < \delta$, then $| f(x) - f(c) | < \epsilon$.
+\end{definition}
+\begin{definition}
+	$f$ is \textbf{uniformly continuous} if and only if $\forall \epsilon > 0, \exists \delta > 0$ such that $\forall x, y \in \Dom(f)$, if 
+	$| x - y | < \delta$, then $| f(x) - f(y) | < \epsilon$.
+\end{definition}
+\begin{theorem}
+	If $f$ is continuous on a closed, finite interval then $f$ is bounded.
+\end{theorem}
+\begin{theorem}[Extreme Value Theorem]
+	If $f$ is continuous on a closed interval $[a, b]$, then $\exists c \in [a, b]$ such that $\forall x \in [a, b], f(x) \leq f(c)$ and
+	$\exists d \in [a, b]$ such that $\forall x \in [a, b], f(d) \leq f(x)$.
+\end{theorem}
+\begin{theorem}[Intermediate Value Theorem]
+	Suppose $f$ is continuous on a closed interval $[a, b]$, $f(a) \neq f(b)$, and $y$ is between $f(a)$ and $f(b)$. Then 
+	$\exists c \in [a, b]$ such that $f(c) = y$.
+\end{theorem}
+\begin{definition}
+	If $a \in \Dom(f)$, define
+	\[ f'(a) = \lim_{x \to a} \frac{f(x) - f(a)}{x - a} = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h} \]
+	to be the \textbf{derivative of $f$} at $x = a$. If this quantity is defined, $f$ is said to be \textbf{differentiable} at $x = a$.
+\end{definition}
+\begin{theorem}[Rolle's Theorem]
+	If $f$ is continuous on $[a, b]$, differentiable on $(a, b)$, and $f(a) = f(b) = 0$, then $\exists c \in (a, b)$ such that $f'(c) = 0$.
+\end{theorem}
+\begin{theorem}[Mean Value Theorem]
+	If $f$ is continuous on $[a, b]$ and differentiable on $(a, b)$, then $\exists c \in (a, b)$ such that
+	\[ f'(c) = \frac{f(b) - f(a)}{b - a} \]
+\end{theorem}
+\begin{theorem}
+	If $f$ is continuous on $[a, b]$, $f(c)$ is a maximum where $a < c < b$, and $f$ is differentiable at $c$, then $f'(c) = 0$.
+\end{theorem}
+\begin{theorem}
+	If $f$ is differentiable at $x = a$ then $f$ is continuous at $a$.
+\end{theorem}
+\begin{theorem}
+	If $f(x) = g(x)$ except at $x = a$, then $lim_{x \to a} f(x) = \lim_{x \to a} g(x)$.
+\end{theorem}
+\begin{theorem}[Product Rule]
+	If $f, g$ are differentiable at $x = a$ then $f(x)g(x)$ is differentiable at $x = a$ as well. The derivative of the product will be 
+	$(fg)'(a) = f'(a)g(a) + f(a)g'(a)$.
+\end{theorem}
+\begin{theorem}[Power Rule]
+	If $f(x) = cx^p$ then $f'(x) = (cp)x^{p - 1}$.
+\end{theorem}
+
+\section{Introduction to Topology}
+\begin{definition}
+	A set $S \subset \reals$ is \textbf{open} if and only if $\forall x \in S, \exists \epsilon > 0$ such that $B_{\epsilon}(x) \subset S$.
+\end{definition}
+\begin{definition}
+	A set $S \subset \reals$ is \textbf{closed} if and only if $\reals \setminus S$ is open.
+\end{definition}
+
+\end{document}
